@@ -7,6 +7,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import CreateClient from "./pages/CreateClient";
 import ListClient from "./pages/ListClient";
 import CreateCertificate from "./pages/CreateCertificate";
+import BalanceCertificate from "./pages/BalanceCertificate";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -24,6 +25,10 @@ export default function App() {
           <Route path="clientes/nuevo" element={<CreateClient />} />
           <Route path="clientes" element={<ListClient />} />
           <Route path="certificados/nuevo" element={<CreateCertificate />} />
+          <Route
+            path="certificados/balance/:id"
+            element={<BalanceCertificate />}
+          />
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>

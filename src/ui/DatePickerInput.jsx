@@ -21,9 +21,8 @@ export default function DatePickerInput({
       control={control}
       rules={rules}
       render={({ field }) => (
-        <LocalizationProvider dateAdapter={AdapterDateFns} fullWidth>
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
           <DatePicker
-            fullWidth
             {...field}
             id={id}
             label={label}
