@@ -1,28 +1,36 @@
-import { Search } from "@mui/icons-material";
-import {
-  Divider,
-  Grid,
-  IconButton,
-  TextField,
-  Typography,
-} from "@mui/material";
-import React from "react";
-import { PatternFormat } from "react-number-format";
-import TextInput from "../ui/TextInput";
+import { Divider, Grid, TextField, Typography } from "@mui/material";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import FormatInput from "../ui/FormatInput";
+import { getByDniAPI } from "../server/ClientApi";
 
 export default function FormSearchClientByDNI({
-  onSubmit,
-  fullName,
+  onSubmitClient,
   defaultClient,
 }) {
   const {
     handleSubmit,
-    register,
     control,
+    setError,
     formState: { errors },
   } = useForm({ defaultValues: defaultClient });
+
+  const [fullName, setFullName] = useState("");
+  async function onSubmit(data, e) {
+    e.preventDefault();
+    const client = await getByDniAPI(data.dni);
+    if (client === null || client === "") {
+      setError("dni", {
+        type: "manual",
+        message: "No existe esta cedula",
+      });
+      onSubmitClient("");
+      if (fullName !== "") setFullName("");
+    } else {
+      onSubmitClient(client.id);
+      setFullName(client.fullName);
+    }
+  }
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Grid item container xs={12} spacing={2} rowSpacing={2} mt={1}>
@@ -41,7 +49,7 @@ export default function FormSearchClientByDNI({
             rules={{
               required: {
                 value: true,
-                message: "Cedula is required",
+                message: "Cedula es requerido.",
               },
               validate: (value) =>
                 !value.includes("_") || "Cedula es requerido.",

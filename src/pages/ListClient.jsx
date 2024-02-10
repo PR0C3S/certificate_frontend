@@ -3,7 +3,8 @@ import { Button, Card, CardContent, Grid, Typography } from "@mui/material";
 import TableComponent from "../ui/TableComponent";
 import TableUserData from "../ui/TableUserData";
 import { useNavigate } from "react-router-dom";
-import useListUser from "../hooks/useListUser";
+import useListUser from "../hooks/useListClient";
+import useListClient from "../hooks/useListClient";
 export default function ListClient() {
   const columns = [
     "#ID",
@@ -17,8 +18,9 @@ export default function ListClient() {
     "Acciones",
   ];
   const navigate = useNavigate();
-  const { users, isLoadingUsers, errorUsers } = useListUser();
-  if (isLoadingUsers) return <h1>Cargando</h1>;
+  const { clients, isLoadingClients, errorClients } = useListClient();
+  if (isLoadingClients) return <h1>Cargando</h1>;
+  else if (errorClients) return <h1>Error</h1>;
   return (
     <Card>
       <CardContent>
@@ -50,12 +52,8 @@ export default function ListClient() {
           </Grid>
           <Grid item xs={12}>
             <TableComponent columns={columns}>
-              {users.map((row) => (
-                <TableUserData
-                  key={row.id}
-                  row={row}
-                  onClick={() => navigate(`/clientes/editar/${row.id}`)}
-                />
+              {clients.map((row) => (
+                <TableUserData key={row.id} row={row} />
               ))}
             </TableComponent>
           </Grid>

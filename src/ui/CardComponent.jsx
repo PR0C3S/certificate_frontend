@@ -12,11 +12,11 @@ import React from "react";
 export default function CardComponent({
   children,
   title,
-  cancellButtonAction,
-  saveButtonAction,
+  onCancell,
   cancellButtonText = "Cancelar",
   saveButtonText = "Guardar",
   isSaveButtonDisabled = false,
+  idForm,
 }) {
   return (
     <Card>
@@ -38,12 +38,18 @@ export default function CardComponent({
       <CardActions>
         <Grid container justifyContent={"start"} mb={1} spacing={1} ml={2}>
           <Grid item>
-            <Button variant="contained" onClick={cancellButtonAction} fullWidth>
+            <Button variant="contained" onClick={onCancell} fullWidth>
               {cancellButtonText}
             </Button>
           </Grid>
           <Grid item>
-            <Button variant="contained" type="submit" fullWidth disabled={isSaveButtonDisabled}>
+            <Button
+              variant="contained"
+              type="submit"
+              fullWidth
+              disabled={isSaveButtonDisabled}
+              form={idForm}
+            >
               {saveButtonText}
             </Button>
           </Grid>

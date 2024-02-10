@@ -2,13 +2,13 @@ import { axiosClient } from "../utils/Axios";
 
 const route = "/cliente";
 
-export const checkDNIAPI = async (dni) => {
+export const getByDniAPI = async (dni) => {
   try {
-    const res = await axiosClient.get(`${route}/findByDNI/${dni}}`);
+    const res = await axiosClient.get(`${route}/findByDni/${dni}`);
     const data = await res.data;
-    return data;
+    return data; // Validation passed
   } catch {
-    console.error(`Error searching user by DNI.`);
+    console.error(`Error searching client by DNI.`);
   }
 };
 
@@ -18,38 +18,49 @@ export const checkEmailAPI = async (email) => {
     const data = await res.data;
     return data;
   } catch {
-    console.error(`Error searching user by email.`);
+    console.error(`Error searching client by email.`);
   }
 };
 
-export const createUserAPI = async (user) => {
+export const createClientApi = async (user) => {
   try {
     const res = await axiosClient.post(`${route}/created`, user);
     const data = await res.data;
     return data;
   } catch {
-    console.error(`Error creating user.`);
+    console.error(`Error creating client.`);
   }
 };
 
-export const updateUserAPI = async (id, user) => {
+export const updateClientAPI = async (object) => {
   try {
-    const res = await axiosClient.patch(`${route}/update/${id}`, user);
+    const res = await axiosClient.patch(
+      `${route}/update/${object.id}`,
+      object.body
+    );
     const data = await res.data;
     return data;
   } catch {
-    console.error(`Error updating user.`);
+    console.error(`Error updating client.`);
   }
 };
 
-export const listUserAPI = async () => {
+export const getClientByIdAPI = async (id) => {
+  try {
+    const res = await axiosClient.get(`${route}/update/${id}`);
+    const data = await res.data;
+    return data;
+  } catch {
+    console.error(`Error getting client by id.`);
+  }
+};
+
+export const listClientsAPI = async () => {
   try {
     const res = await axiosClient.get(`${route}/list`);
     const data = await res.data;
-    console.log("data", data);
     return data;
   } catch (error) {
-    console.log(error);
     console.error(`Error getting user list.`);
   }
 };

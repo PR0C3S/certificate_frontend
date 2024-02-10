@@ -10,6 +10,7 @@ export default function TextInput({
   errors,
   placeholder = "",
   isDisabled = false,
+  value,
 }) {
   return (
     <Controller
@@ -23,6 +24,7 @@ export default function TextInput({
           label={label}
           placeholder={placeholder}
           variant="outlined"
+          value={value}
           fullWidth
           error={Boolean(errors[id])}
           helperText={errors[id]?.message}

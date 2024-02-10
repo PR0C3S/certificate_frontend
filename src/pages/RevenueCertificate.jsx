@@ -1,7 +1,6 @@
 import {
   Button,
   Card,
-  CardActionArea,
   CardActions,
   CardContent,
   Chip,
@@ -18,42 +17,22 @@ import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import ListComponent from "../ui/ListComponent";
 import { NumericFormat } from "react-number-format";
-import useGetBalanceById from "../hooks/useGetBalanceById";
 import { useNavigate } from "react-router-dom";
-import { add, formatISO, parseISO, sub } from "date-fns";
+import { parseISO } from "date-fns";
 import { ArrowBack, Percent } from "@mui/icons-material";
-import useDepositeOneMonth from "../hooks/useDepositeOneMonth";
-import useDepositeRestMonths from "../hooks/useDepositeRestMonths";
-import useRetire from "../hooks/useRetire";
+import useGetRevenueById from "../hooks/useGetRevenueById";
 
-export default function BalanceCertificate() {
-  const { isLoadingBalance, errorBalance, balance } = useGetBalanceById();
+export default function RevenueCertificate() {
+  const { isLoadingRevenue, errorRevenue, revenue } = useGetRevenueById();
   const navigate = useNavigate();
-  const { depositeOneMonth, isDepositingOneMonth } = useDepositeOneMonth();
-  const { retire, isRetiring } = useRetire();
-  const { depositeRestMonths, isDepositingRestMonths } =
-    useDepositeRestMonths();
 
   function onBack() {
     navigate("/certificados");
   }
 
-  function onDepositeOneMonth() {
-    depositeOneMonth(balance.id);
-  }
-  function onDepositeRestMonths() {
-    depositeRestMonths(balance.id);
-  }
+  if (isLoadingRevenue) return <h1>Cargando...</h1>;
 
-  function onRetire(date) {
-    //console.log("type", formatISO(date));
-
-    retire({ body: { date }, id: balance.id });
-  }
-
-  if (isLoadingBalance) return <h1>Cargando...</h1>;
-
-  if (errorBalance) return <h1>Error</h1>;
+  if (errorRevenue) return <h1>Error</h1>;
 
   return (
     <Card>
@@ -70,16 +49,16 @@ export default function BalanceCertificate() {
             justifyContent={"center"}
           >
             <Grid item xs={10}>
-              <Typography variant="h4">Certificado</Typography>
+              <Typography variant="h4">Ganancias del certificado</Typography>
             </Grid>
             <Grid item container xs={2} justifyContent={"end"}>
               <Chip
-                label={`Estado: ${balance.status}`}
+                label={`Estado: ${revenue.status}`}
                 variant="filled"
                 color={
-                  balance.status === "Activo"
+                  revenue.status === "Activo"
                     ? "success"
-                    : balance.status === "Cancelado"
+                    : revenue.status === "Cancelado"
                     ? "error"
                     : "warning"
                 }
@@ -97,15 +76,27 @@ export default function BalanceCertificate() {
               textAlign={"center"}
               color={"primary.main"}
             >
-              {balance.accountNumber}
+              {revenue.accountNumber}
             </Typography>
           </Grid>
           <Grid item xs={12}>
             <Typography variant={"h4"} textAlign={"center"} color={"green"}>
               <NumericFormat
-                prefix={balance.currency + " "}
+                prefix={"Balance actual: " + revenue.currency + " "}
                 displayType="text"
-                value={balance.amount}
+                value={revenue.amount}
+                decimalScale={2}
+                thousandSeparator={true}
+              />
+            </Typography>
+          </Grid>
+
+          <Grid item xs={12}>
+            <Typography variant={"h4"} textAlign={"center"} color={"green"}>
+              <NumericFormat
+                prefix={"Balance esperado: " + revenue.currency + " "}
+                displayType="text"
+                value={revenue.expectedAmount}
                 decimalScale={2}
                 thousandSeparator={true}
               />
@@ -122,7 +113,7 @@ export default function BalanceCertificate() {
                     fullWidth: true,
                   },
                 }}
-                value={parseISO(balance.startDate)}
+                value={parseISO(revenue.startDate)}
                 readOnly={true}
               />
             </LocalizationProvider>
@@ -138,17 +129,18 @@ export default function BalanceCertificate() {
                     fullWidth: true,
                   },
                 }}
-                value={parseISO(balance.finishDate)}
+                value={parseISO(revenue.finishDate)}
                 readOnly={true}
               />
             </LocalizationProvider>
           </Grid>
+
           <Grid item xs={6}>
             <NumericFormat
               customInput={TextField}
               label={"Intereses de Ganancia"}
               fullWidth
-              value={balance.earnInterest * 100}
+              value={revenue.earnInterest * 100}
               disabled={true}
               InputProps={{
                 endAdornment: (
@@ -164,7 +156,7 @@ export default function BalanceCertificate() {
               customInput={TextField}
               label={"Intereses de Cancelacion"}
               fullWidth
-              value={balance.cancellInterest * 100}
+              value={revenue.cancellInterest * 100}
               disabled={true}
               InputProps={{
                 endAdornment: (
@@ -180,7 +172,7 @@ export default function BalanceCertificate() {
             <TextField
               id={"dni"}
               label={"Cedula"}
-              value={balance.dni}
+              value={revenue.dni}
               fullWidth
             />
           </Grid>
@@ -189,112 +181,19 @@ export default function BalanceCertificate() {
               id={"client"}
               label={"Nombre del cliente"}
               fullWidth
-              value={balance.fullName}
-              readOnly={true}
+              value={revenue.fullName}
             />
           </Grid>
 
-          {balance.status === "Activo" && (
-            <Grid item container xs={12} spacing={2}>
-              <Grid item xs={6}>
-                <Button
-                  variant={"contained"}
-                  fullWidth
-                  onClick={onDepositeOneMonth}
-                  disabled={
-                    isDepositingOneMonth || isDepositingRestMonths || isRetiring
-                  }
-                >
-                  Hacer 1 deposito
-                </Button>
-              </Grid>
-              <Grid item xs={6}>
-                <Button
-                  variant={"contained"}
-                  fullWidth
-                  onClick={onDepositeRestMonths}
-                  disabled={
-                    isDepositingOneMonth || isDepositingRestMonths || isRetiring
-                  }
-                >
-                  Completar todos los depositos
-                </Button>
-              </Grid>
-              <Grid item xs={6}>
-                <Button
-                  variant={"contained"}
-                  color={"error"}
-                  fullWidth
-                  onClick={() =>
-                    onRetire(sub(parseISO(balance.finishDate), { days: 10 }))
-                  }
-                  disabled={
-                    isDepositingOneMonth || isDepositingRestMonths || isRetiring
-                  }
-                >
-                  Realizar retiro de fondos con penalizacion
-                </Button>
-              </Grid>
-              <Grid item xs={6}>
-                <Button
-                  variant={"contained"}
-                  color={"error"}
-                  fullWidth
-                  onClick={() =>
-                    onRetire(add(parseISO(balance.finishDate), { days: 10 }))
-                  }
-                  disabled={
-                    isDepositingOneMonth || isDepositingRestMonths || isRetiring
-                  }
-                >
-                  Realizar retiro de fondos
-                </Button>
-              </Grid>
-            </Grid>
-          )}
-
-          {balance.status === "Finalizado" && balance.amount > 0 && (
-            <Grid item container xs={12} spacing={2}>
-              <Grid item xs={6}>
-                <Button
-                  variant={"contained"}
-                  color={"error"}
-                  fullWidth
-                  onClick={() =>
-                    onRetire(sub(parseISO(balance.finishDate), { days: 10 }))
-                  }
-                  disabled={
-                    isDepositingOneMonth || isDepositingRestMonths || isRetiring
-                  }
-                >
-                  Realizar retiro de fondos con penalizacion
-                </Button>
-              </Grid>
-              <Grid item xs={6}>
-                <Button
-                  variant={"contained"}
-                  color={"error"}
-                  fullWidth
-                  onClick={() =>
-                    onRetire(add(parseISO(balance.finishDate), { days: 10 }))
-                  }
-                  disabled={
-                    isDepositingOneMonth || isDepositingRestMonths || isRetiring
-                  }
-                >
-                  Realizar retiro de fondos
-                </Button>
-              </Grid>
-            </Grid>
-          )}
-
           <Grid item xs={12}>
             <Divider>
-              <Typography variant="h6">Estado de cuenta</Typography>
+              <Typography variant="h6">
+                Estado de cuenta que generara
+              </Typography>
             </Divider>
             <ListComponent maxHeight={300}>
-              {balance.transactions.map((transaction) => (
-                <div key={transaction.id}>
+              {revenue.transactions.map((transaction, index) => (
+                <div key={transaction.id + index}>
                   <ListItem style={{ backgroundColor: "#fafafa" }}>
                     <ListItemText
                       primary={transaction.date}

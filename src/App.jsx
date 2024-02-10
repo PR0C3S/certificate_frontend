@@ -8,6 +8,11 @@ import CreateClient from "./pages/CreateClient";
 import ListClient from "./pages/ListClient";
 import CreateCertificate from "./pages/CreateCertificate";
 import BalanceCertificate from "./pages/BalanceCertificate";
+import UpdateClient from "./pages/UpdateClient";
+import ListCertificate from "./pages/ListCertificate";
+import RevenueCertificate from "./pages/RevenueCertificate";
+import CertificatesByClient from "./pages/CertificatesByClient";
+import NavBar from "./ui/NavBar";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -20,14 +25,25 @@ const queryClient = new QueryClient({
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
+      <NavBar />
       <BrowserRouter>
         <Routes>
           <Route path="clientes/nuevo" element={<CreateClient />} />
           <Route path="clientes" element={<ListClient />} />
+          <Route path="clientes/editar/:id" element={<UpdateClient />} />
+          <Route
+            path="certificados/cliente/:id"
+            element={<CertificatesByClient />}
+          />
           <Route path="certificados/nuevo" element={<CreateCertificate />} />
+          <Route path="certificados" element={<ListCertificate />} />
           <Route
             path="certificados/balance/:id"
             element={<BalanceCertificate />}
+          />
+          <Route
+            path="certificados/ganancia/:id"
+            element={<RevenueCertificate />}
           />
         </Routes>
       </BrowserRouter>

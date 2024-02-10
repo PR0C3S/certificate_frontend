@@ -15,7 +15,7 @@ export default function TableComponent({ columns, children }) {
         <TableHead>
           <TableRow>
             {columns.map((column) => (
-              <TableCell align="center" key={column} onClick>
+              <TableCell align="center" key={column}>
                 {column}
               </TableCell>
             ))}

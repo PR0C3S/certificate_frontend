@@ -41,6 +41,7 @@ export default function NumericInput({
           error={Boolean(errors[id])}
           helperText={errors[id]?.message}
           disabled={isDisabled}
+          allowNegative={false}
           InputProps={{
             startAdornment: startAdornment,
             endAdornment: endAdornment,

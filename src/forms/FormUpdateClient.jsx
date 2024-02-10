@@ -1,22 +1,27 @@
-import React, { useState } from "react";
+import React from "react";
 import TextInput from "../ui/TextInput";
-import { Grid } from "@mui/material";
 import SelectInput from "../ui/SelectInput";
 import { genderOptions } from "../utils/Constant";
 import { useForm } from "react-hook-form";
 import FormatInput from "../ui/FormatInput";
-import { sub } from "date-fns";
+import { parseISO, sub } from "date-fns";
 import DatePickerInput from "../ui/DatePickerInput";
-import { getByDniAPI } from "../server/ClientApi";
-import { axiosClient } from "../utils/Axios";
-export default function FormCreateClient({ onSubmit, defaultClient, idForm }) {
+import { Grid } from "@mui/material";
+export default function FormUpdateClient({ onSubmit, defaultClient, idForm }) {
   const {
     handleSubmit,
     control,
-    watch,
     formState: { errors },
   } = useForm({
-    defaultValues: defaultClient,
+    defaultValues: {
+      dni: defaultClient.dni,
+      fullName: defaultClient.fullName,
+      birthday: parseISO(defaultClient.birthday),
+      gender: defaultClient.gender,
+      email: defaultClient.email,
+      phone: defaultClient.phone,
+      location: defaultClient.location,
+    },
   });
   const today = new Date();
   const minDate = sub(today, { years: 120 });
@@ -34,20 +39,17 @@ export default function FormCreateClient({ onSubmit, defaultClient, idForm }) {
                 message: "Cedula es requerido.",
               },
               validate: {
-                notEmpy: (value) =>
+                validate: (value) =>
                   !value.includes("_") || "Cedula es requerido.",
-                dniAvailable: async (value) => {
-                  const data = await getByDniAPI(value);
-                  if (data === null || data === "") {
-                    return true;
-                  } else {
-                    return "Cedula en uso.";
-                  }
-                },
+
+                existClient:
+                  (client !== null && client !== "") ||
+                  "No existe usuario con esta cedula",
               },
             }}
             errors={errors}
             format="###-#######-#"
+            isDisabled={true}
             id={"dni"}
             label={"Cedula"}
           />

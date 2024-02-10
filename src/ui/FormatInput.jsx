@@ -17,7 +17,7 @@ export default function FormatInput({
   let endAdorment = null;
   if (addButtonToEnd) {
     endAdorment = (
-      <IconButton type="submit">
+      <IconButton type="submit" title={"Buscar por Id"}>
         <Search />
       </IconButton>
     );
@@ -39,6 +39,7 @@ export default function FormatInput({
           error={Boolean(errors[id])}
           helperText={errors[id]?.message}
           disabled={isDisabled}
+          allowNegative={false}
           fullWidth
           InputProps={{
             endAdornment: endAdorment,
